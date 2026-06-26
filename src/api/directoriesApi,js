@@ -1,0 +1,76 @@
+const allData = Array.from({ length: 120 }).map((_, index) => ({
+
+  id: index + 1,
+
+  projectId: `PR-${1000 + index}`,
+
+  contractor: [
+    "Ромашка",
+    "Василек",
+    "Лилия",
+    "Орхидея"
+  ][index % 4],
+
+  amount: Math.floor(Math.random() * 100000),
+
+  status: [
+    "ACTIVE",
+    "ERROR",
+    "ARCHIVE"
+  ][index % 3]
+}));
+
+export async function fetchDirectories({
+
+  cursor = 0,
+  limit = 10,
+  search = "",
+  status = null
+}) {
+
+  await new Promise(resolve =>
+    setTimeout(resolve, 700)
+  );
+
+  let filtered = [...allData];
+
+  if (search) {
+
+    filtered = filtered.filter(item =>
+
+      item.projectId
+        .toLowerCase()
+        .includes(search.toLowerCase())
+
+      ||
+
+      item.contractor
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+  }
+
+  if (status) {
+
+    filtered = filtered.filter(item =>
+      item.status === status
+    );
+  }
+
+  const start = cursor;
+  const end = start + limit;
+
+  const items = filtered.slice(start, end);
+
+  const nextCursor =
+    end < filtered.length
+      ? end
+      : null;
+
+  return {
+
+    items,
+    nextCursor,
+    total: filtered.length
+  };
+}
